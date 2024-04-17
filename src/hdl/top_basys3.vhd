@@ -129,6 +129,8 @@ component clock_divider is
          
 signal w_floor : std_logic_vector (3 downto 0);
 signal w_clk : std_logic;
+signal w_fsmreset : std_logic;
+signal w_clkreset : std_logic;
 --signal w_clkt : std_logic;
 --signal w_data : std_logic_vector (3 downto 0);
 --signal w_sel : std_logic_vector (1 downto 0);
@@ -150,7 +152,7 @@ begin
 --    );
     
 elevator_controller_fsm_inst : elevator_controller_fsm port map (
-    i_reset => btnR or btnU,
+    i_reset => w_fsmreset,
     i_stop => sw(0),
     i_clk => w_clk,
     i_up_down => sw(1),
@@ -165,7 +167,7 @@ sevenSegDecoder_inst : sevenSegDecoder port map (
 clock_divider_inst : clock_divider 
 generic map(k_DIV => k_clock_divs)
 port map(
-    i_reset => btnU or btnL,
+    i_reset => w_clkreset,
     i_clk => clk,
     o_clk => w_clk
     );
@@ -177,7 +179,8 @@ port map(
  --       o_clk => w_clkt
  --       );
 	-- CONCURRENT STATEMENTS ----------------------------
-	
+	w_fsmreset <= btnU or btnR;
+	w_clkreset <= btnU or btnL;
 	led <= (15 => w_clk, others => '0');
 	-- LED 15 gets the FSM slow clock signal. The rest are grounded.
 	
